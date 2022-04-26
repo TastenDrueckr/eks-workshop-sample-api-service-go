@@ -11,22 +11,45 @@ import (
 )
 
 func main() {
-	handler := http.NewServeMux()
-	///we create a new router to expose our api
-	//to our users
-	handler.HandleFunc("/api/hello", SayHello)
-	//Every time a  request is sent to the endpoint ("/api/hello")
-	 //the function SayHello will be invoked
-	http.ListenAndServe("0.0.0.0:8080", handler)
-	//we tell our api to listen to all request to port 8080.
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+		f := fib()
+
+		res := &response{Message: "Hello World"}
+
+		for _, e := range os.Environ() {
+			pair := strings.Split(e, "=")
+			res.EnvVars = append(res.EnvVars, pair[0]+"="+pair[1])
+		}
+		sort.Strings(res.EnvVars)
+
+		for i := 1; i <= 90; i++ {
+			res.Fib = append(res.Fib, f())
+		}
+
+		// Beautify the JSON output
+		out, _ := json.MarshalIndent(res, "", "  ")
+
+		// Normally this would be application/json, but we don't want to prompt downloads
+		w.Header().Set("Content-Type", "text/plain")
+
+		io.WriteString(w, string(out))
+
+		fmt.Println("Hello world - the log message")
+	})
+	http.ListenAndServe(":8080", nil)
 }
-func SayHello(w http.ResponseWriter, r *http.Request) {
-	//notice how this function takes two parameters
-	//the first parameter is a ResponseWriter writer and 
-	//this is where we write the response we want to send back to the user
-	//in this case Hello world
-	//the second parameter is a pointer of type  http.Request this holds 
-	//all information of the request sent by the user
-	//this may include query parameters,path parameters and many more
-	fmt.Fprintf(w, `Hello world`)
+
+type response struct {
+	Message string   `json:"message"`
+	EnvVars []string `json:"env"`
+	Fib     []int    `json:"fib"`
+}
+
+func fib() func() int {
+	a, b := 0, 1
+	return func() int {
+		a, b = b, a+b
+		return a
+	}
 }
