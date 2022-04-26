@@ -38,7 +38,7 @@ func main() {
 
 		fmt.Println("Hello world - the log message")
 	})
-	fmt.Println("Starting Service...")
+	fmt.Println("Start Listening...")
 	http.ListenAndServe(":8080", nil)
 }
 
