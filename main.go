@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-unc main() {
+func main() {
 	handler := http.NewServeMux()
 	///we create a new router to expose our api
 	//to our users
