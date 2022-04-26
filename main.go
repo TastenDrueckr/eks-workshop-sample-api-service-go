@@ -12,8 +12,6 @@ import (
 
 func main() {
 	
-	fmt.Println("Starting Service...")
-	
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
 		f := fib()
@@ -40,6 +38,7 @@ func main() {
 
 		fmt.Println("Hello world - the log message")
 	})
+	fmt.Println("Starting Service...")
 	http.ListenAndServe(":8080", nil)
 }
 
